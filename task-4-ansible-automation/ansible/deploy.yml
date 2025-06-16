@@ -1,0 +1,34 @@
+---
+- name: 🚀 Deploy React App to EC2
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: 🧼 Update all packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: 🧩 Install Node.js and Git
+      yum:
+        name:
+          - nodejs
+          - git
+        state: present
+
+    - name: 📁 Clone GitHub Repo
+      git:
+        repo: https://github.com/rohit-tawade/aws-devops-handson.git
+        dest: /home/ec2-user/app
+        force: yes
+
+    - name: 📦 Install Node dependencies
+      npm:
+        path: /home/ec2-user/app
+        production: yes
+
+    - name: 🚀 Start React App
+      shell: |
+        cd /home/ec2-user/app
+        nohup npm start -- --host 0.0.0.0 > output.log 2>&1 &
+
